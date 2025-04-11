@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flux - Search Notes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f5e1c8;
+      display: flex;
+      height: 100vh;
+    }
+
+    aside {
+      background: #e0cbb5;
+      width: 220px;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    aside nav {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    aside nav a {
+      text-decoration: none;
+      color: #4a2e1e;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color 0.3s;
+    }
+
+    aside nav a:hover {
+      color: #8b5e3b;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .profile img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .welcome {
+      color: #8b5e3b;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .search-box input {
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #c4a484;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      background: #fff8f0;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px #e2cba766;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .note {
+      background: #fff8f0;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      height: 180px;
+    }
+
+    .note span {
+      font-weight: 500;
+      color: #4a2e1e;
+      margin-bottom: 5px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #d9b98c;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      width: fit-content;
+      margin-bottom: 10px;
+    }
+
+    .note-footer {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      background: #8b5e3b;
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .icon-btn:hover {
+      background: #6a4229;
+    }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: white;
+    }
+
+    .empty-state {
+      text-align: center;
+      margin-top: 60px;
+      color: #a3825a;
+      font-size: 18px;
+    }
+
+    .empty-state img {
+      max-width: 180px;
+      margin-bottom: 20px;
+    }
+
+    /* Preview Modal */
+    #previewModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #previewModal .modal-content {
+      background: #fff8f0;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    #previewModal h3 {
+      margin-top: 0;
+      color: #8b5e3b;
+    }
+
+    #previewModal p {
+      color: #4a2e1e;
+    }
+
+    #previewModal button {
+      background: #8b5e3b;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    #previewModal button:hover {
+      background: #6a4229;
+    }
+
+    .pdf-preview {
+      width: 100%;
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside>
+    <nav>
+      <a href="#"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="#"><i data-lucide="star"></i> Favorites</a>
+      <a href="#"><i data-lucide="upload-cloud"></i> Uploads</a>
+      <a href="#"><i data-lucide="search"></i> Search</a>
+    </nav>
+    <div class="profile">
+      <img src="https://i.pravatar.cc/150?img=32" alt="User" />
+      <span>User</span>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+    <header>
+      <div class="welcome">Search Notes</div>
+      <div class="search-box">
+        <input type="text" placeholder="Search by title..." onkeyup="filterNotes(event)" />
+      </div>
+    </header>
+
+    <div id="searchResults" class="notes-grid"></div>
+
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <img src="https://cdn-icons-png.flaticon.com/512/6134/6134065.png" alt="Empty">
+      <p>No matching notes found.</p>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal">
+    <div class="modal-content">
+      <h3>Note Preview</h3>
+      <div id="previewContent"></div>
+      <button onclick="closePreview()">Close</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    const notes = [
+      { name: "Math Notes - Algebra.pdf", tag: "Math", type: "pdf" },
+      { name: "History Summary.docx", tag: "History", type: "docx" },
+      { name: "Physics Notes - Mechanics.pdf", tag: "Physics", type: "pdf" },
+      { name: "Chemistry Lab Manual.docx", tag: "Chemistry", type: "docx" },
+      { name: "English Essay Outline.txt", tag: "English", type: "txt" },
+      { name: "Geography Map Guide.pdf", tag: "Geography", type: "pdf" }
+    ];
+
+    const container = document.getElementById("searchResults");
+    const emptyState = document.getElementById("emptyState");
+
+    function renderNotes(list) {
+      container.innerHTML = "";
+      if (list.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+      emptyState.style.display = "none";
+
+      list.forEach(note => {
+        const div = document.createElement("div");
+        div.className = "note";
+        div.innerHTML = `
+          <span>${note.name}</span>
+          <div class="tag">${note.tag}</div>
+          <div class="note-footer">
+            <button class="icon-btn" onclick="downloadNote('${note.name}')" title="Download"><i data-lucide="download"></i></button>
+            <button class="icon-btn" onclick="previewNote('${note.name}', '${note.type}')" title="Preview"><i data-lucide="eye"></i></button>
+            <button class="icon-btn" onclick="likeNote('${note.name}')" title="Like"><i data-lucide="heart"></i></button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterNotes(e) {
+      const value = e.target.value.toLowerCase();
+      const filtered = notes.filter(n => n.name.toLowerCase().includes(value));
+      renderNotes(filtered);
+    }
+
+    function downloadNote(name) {
+      alert("Pretend downloading: " + name);
+    }
+
+    function previewNote(name, type) {
+      const previewBox = document.getElementById('previewContent');
+      const filePath = `./path/to/notes/${name}`;
+
+      if (type === 'pdf') {
+        previewBox.innerHTML = `<iframe class="pdf-preview" src="${filePath}" frameborder="0"></iframe>`;
+      } else if (type === 'txt') {
+        previewBox.innerHTML = `<pre>${getSampleText(filePath)}</pre>`;
+      } else {
+        previewBox.innerHTML = `<p>Preview not available for this file type.</p>`;
+      }
+
+      document.getElementById('previewModal').style.display = 'flex';
+    }
+
+    function closePreview() {
+      document.getElementById('previewModal').style.display = 'none';
+    }
+
+    function likeNote(name) {
+      alert("You liked: " + name);
+    }
+
+    function getSampleText(filePath) {
+      return "This is a sample text file content preview.";
+    }
+
+    // Initial render
+    renderNotes(notes);
+  </script>
+</body>
+</html>
