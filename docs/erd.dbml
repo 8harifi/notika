@@ -1,0 +1,47 @@
+Table users {
+	id int [pk, increment]
+	name varchar
+	phone varchar [unique]
+}
+
+Table documents {
+	id int [pk, increment]
+	title varchar
+	file_path varchar
+	upload_date datetime
+	views int
+	downloads int
+	term varchar
+	uploaded_by int [ref: > users.id]
+	course_id int [ref: > courses.id]
+}
+
+Table courses {
+	id int [pk, increment]
+	name varchar
+	code varchar
+}
+
+Table downloads {
+	id int [pk, increment]
+	user_id int [ref: > users.id]
+	document_id int [ref: > documents.id]
+	timestamp datetime
+	ip varchar
+}
+
+Table logins {
+	id int [pk, increment]
+	user_id int [ref: > users.id]
+	login_time datetime
+	ip varchar
+}
+
+Table ratings {
+	id int [pk, increment]
+	user_id int [ref: > users.id]
+	document_id int [ref: > documents.id]
+	score int [note: 'Score value, e.g., from 1 to 5']
+	timestamp datetime
+}
+
