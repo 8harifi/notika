@@ -80,3 +80,14 @@ class Rating(models.Model):
 	def __str__(self):
 		return f"{self.user} rated {self.document} {self.score}/5"
 
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='favorited_by')
+    added_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'document')  # Prevent duplicates
+
+    def __str__(self):
+        return f"{self.user} favorited {self.document}"
+

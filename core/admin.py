@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Course, Document, Download, Login, Rating
+from .models import User, Course, Document, Download, Login, Rating, Favorite
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
@@ -51,4 +51,11 @@ class RatingAdmin(admin.ModelAdmin):
 	list_display = ('id', 'user', 'document', 'score', 'timestamp')
 	search_fields = ('user__name', 'document__title')
 	list_filter = ('score', 'timestamp')
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'document', 'added_on')
+    search_fields = ('user__email', 'document__title')
+    list_filter = ('added_on',)
 
