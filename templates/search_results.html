@@ -6,37 +6,48 @@
 </head>
 <body>
 
-  <h1>Search Results</h1>
+  <h1>Search Results for "{{ query }}"</h1>
 
   <!-- Search Bar -->
-  <input type="text" id="search" placeholder="Search again...">
-  <button onclick="search()">Search</button>
+  <form action="{% url 'core:search_results' %}" method="get">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search again...">
+    <button type="submit">Search</button>
+  </form>
 
   <hr>
 
-  <!-- Example Results -->
-  <div>
-    <h2>Linear Algebra Midterm Notes</h2>
-    <p><strong>Course:</strong> Math 202</p>
-    <p><strong>Uploaded By:</strong> Sarah Khan</p>
-    <p><strong>Description:</strong> Covers matrices, Gaussian elimination, eigenvalues.</p>
-    <a href="/download/201">Download</a>
-  </div>
-  <hr>
-
-  <div>
-    <h2>Intro to Programming - Cheat Sheet</h2>
-    <p><strong>Course:</strong> CS 101</p>
-    <p><strong>Uploaded By:</strong> Alex Lee</p>
-    <p><strong>Description:</strong> Syntax and basic concepts in Python.</p>
-    <a href="/download/202">Download</a>
-  </div>
-  <hr>
+  {% if results %}
+    {% for doc in results %}
+      <div>
+        <h2>{{ doc.title }}</h2>
+        <p><strong>Course:</strong> {{ doc.course }}</p>
+        <p><strong>Uploaded By:</strong> {{ doc.uploaded_by.username }}</p>
+        <p><strong>Description:</strong> {{ doc.description }}</p>
+        <a href="{% url 'core:download' doc.id %}">Download</a>
+      </div>
+      <hr>
+    {% endfor %}
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
 
   <script>
     function search() {
-      alert('Search functionality not implemented.');
+      const query = document.getElementById('search').value.trim();
+      if (query) {
+        window.location.href = `/search-results?q=${encodeURIComponent(query)}`;
+      }
     }
+
+    // Populate the search bar from the URL query string
+    window.onload = function() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (q) {
+        document.getElementById('search').value = q;
+      }
+    };
+
   </script>
 
 </body>

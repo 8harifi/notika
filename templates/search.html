@@ -13,7 +13,10 @@
 
   <script>
     function search() {
-      alert('Search feature not implemented yet.');
+      const query = document.getElementById('search').value.trim();
+      if (query) {
+        window.location.href = `/search-results?q=${encodeURIComponent(query)}`;
+      }
     }
   </script>
 
