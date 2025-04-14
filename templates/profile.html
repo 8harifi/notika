@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Profile</title>
+</head>
+<body>
+
+  <h1>Edit Profile</h1>
+
+  <form id="profileForm" method="post" action="/update-profile">
+    <label for="first_name">First Name:</label><br>
+    <input type="text" id="first_name" name="first_name"><br><br>
+
+    <label for="last_name">Last Name:</label><br>
+    <input type="text" id="last_name" name="last_name"><br><br>
+
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email"><br><br>
+
+    <label for="password">New Password:</label><br>
+    <input type="password" id="password" name="password"><br><br>
+
+    <label for="confirm_password">Confirm Password:</label><br>
+    <input type="password" id="confirm_password"><br><br>
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <script>
+    // Just a basic password match check
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      const pass = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm_password').value;
+      if (pass && pass !== confirm) {
+        e.preventDefault();
+        alert("Passwords don't match.");
+      }
+    });
+  </script>
+
+</body>
+</html>
+

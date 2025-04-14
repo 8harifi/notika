@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Favorite Documents</title>
+</head>
+<body>
+
+  <h1>My Favorite Documents</h1>
+
+  <div id="favoritesList">
+
+    <!-- Example Favorite Item -->
+    <div>
+      <h2>Calculus Final Review</h2>
+      <p><strong>Course:</strong> Math 101</p>
+      <p><strong>Uploaded By:</strong> John Doe</p>
+      <p><strong>Views:</strong> 134</p>
+      <p><strong>Downloads:</strong> 87</p>
+      <p><strong>Description:</strong> All key formulas and practice problems for the final exam.</p>
+      <a href="/download/42">Download</a>
+      <button onclick="removeFavorite(42)">Remove</button>
+      <hr>
+    </div>
+
+    <!-- More items will be dynamically added here -->
+
+  </div>
+
+  <script>
+    function removeFavorite(documentId) {
+      alert('Removing favorite with ID: ' + documentId);
+      // You'd call an API endpoint here, like:
+      // fetch(`/api/favorites/remove/${documentId}`, { method: 'POST' })
+    }
+  </script>
+
+</body>
+</html>
+
