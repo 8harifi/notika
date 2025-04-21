@@ -21,7 +21,7 @@
       <div>
         <h2>{{ doc.title }}</h2>
         <p><strong>Course:</strong> {{ doc.course }}</p>
-        <p><strong>Uploaded By:</strong> {{ doc.uploaded_by.username }}</p>
+        <p><strong>Uploaded By:</strong> {{ doc.uploaded_by.full_name }}</p>
         <p><strong>Description:</strong> {{ doc.description }}</p>
         <a href="{% url 'core:download' doc.id %}">Download</a>
       </div>
