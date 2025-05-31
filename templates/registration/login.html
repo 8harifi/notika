@@ -96,23 +96,5 @@
       <p>Don't have an account? <a href="/signup">Sign Up</a></p>
     </div>
   </div>
-
-  <script>
-    function handleLogin(event) {
-      event.preventDefault();
-      const username = document.getElementById("login-username").value;
-      const password = document.getElementById("login-password").value;
-
-      // Simulated login check
-      if (username === "admin" && password === "1234") {
-        alert("Login successful! Redirecting to dashboard...");
-        window.location.href = "dashboard.html"; // Change this to your actual dashboard page
-      } else {
-        alert("Invalid username or password!");
-      }
-
-      return false;
-    }
-  </script>
 </body>
 </html>
