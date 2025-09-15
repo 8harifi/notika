@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notika - Uploads</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { margin: 0; background: #f5e1c8; display: flex; height: 100vh;  transition: background 0.3s, color 0.3s;}
+    aside {
+      background: #e0cbb5;
+      width: 220px;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background 0.3s, color 0.3s;
+    }
+    aside nav a {
+      text-decoration: none;
+      color: #4a2e1e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    aside nav a:hover { color: #8b5e3b; }
+    .profile { display: flex; align-items: center; gap: 10px; margin-top: auto; }
+    .profile img { width: 36px; height: 36px; border-radius: 50%; }
+    .main { flex: 1; padding: 30px; overflow-y: auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .page-title { color: #8b5e3b; font-size: 26px; font-weight: 600; }
+    .upload-btn {
+      background: #8b5e3b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .upload-btn:hover { background: #6a4229; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      box-shadow: 0 4px 25px rgba(255, 255, 255, 0.1);
+    }
+    .modal-content {
+      background: #fff8f0;
+      padding: 30px 20px 20px;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .modal-content .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #8b5e3b;
+      border: none;
+      background: none;
+    }
+    label { display: block; margin: 15px 0 5px; color: #4a2e1e; }
+    input, textarea, select, .choices__inner {
+      width: 100%;
+      padding: 10px !important;
+      border: 1px solid #c4a484 !important;
+      border-radius: 8px !important;
+      font-size: 16px !important;
+      background: #fff !important;
+    }
+    .modal-content button[type="submit"] {
+      margin-top: 20px;
+      width: 100%;
+    }
+    
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .note-card {
+  background: #fff8f0;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 180px;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.note-card .title {
+  font-weight: 600;
+  color: #4a2e1e;
+  margin-bottom: 6px;
+}
+
+.note-card .tag {
+  display: inline-block;
+  background: #d9b98c;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  width: fit-content;
+  margin-bottom: auto; /* Push buttons to bottom */
+}
+
+.note-card .actions {
+  margin-top: auto;
+  display: flex;
+  gap: 6px;
+}
+
+
+.actions button,
+.actions a {
+  background: #8b5e3b;
+  color: white;
+  border: none;
+  padding: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions button:hover,
+.actions a:hover {
+  background: #6a4229;
+  text-decoration: none;
+}
+.note-card .actions button.liked i {
+  color: red;
+}
+
+    .liked i { fill: white; }
+    .empty-state {
+      text-align: center;
+      color: #a87453;
+      margin-top: 40px;
+    }
+    .empty-state img {
+      width: 180px;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+    .preview-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .preview-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 90%;
+      max-height: 90%;
+      overflow: auto;
+    }
+    .preview-content img,
+    .preview-content iframe {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .description {
+      margin-top: 10px;
+      color: #6e4b33;
+      font-size: 14px;
+    }
+    .profile a.user-link {
+  text-decoration: none;
+  color: #4a2e1e;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  padding: 8px 0;
+  transition: color 0.3s;
+}
+
+.profile a.user-link:hover {
+  color: #8b5e3b;
+}
+    /* Dark mode styles */
+    body.dark {
+      background: #1e1e1e;
+      color: #cfc7b8;
+    }
+    body.dark aside {
+      background: #2a2a2a;
+      color: #cfc7b8;
+      box-shadow: 2px 0 15px rgba(255 255 255 / 0.1);
+    }
+    body.dark aside nav a {
+      color: #cfc7b8;
+    }
+    body.dark aside nav a:hover {
+      color: #e3d8b0;
+    }
+    body.dark .profile img {
+      border-color: #e3d8b0;
+    }
+    body.dark .main {
+      background: #292929;
+      color: #cfc7b8;
+    }
+    body.dark .page-title {
+      color: #e3d8b0;
+    }
+    body.dark  .upload-btn {
+      background: #e3d8b0;
+      color: #2a2a2a;
+    }
+    body.dark .upload-btn:hover {
+      background: #c3b37a;
+    }
+    body.dark .note-card {
+      background: #3a3a3a;
+      box-shadow: 0 2px 15px rgba(255 255 255 / 0.05);
+      color: #cfc7b8;
+    }
+    body.dark .title {
+      color: #e3d8b0;
+    }
+    body.dark .tag {
+      background: #8b6c3b;
+      color: #f0e9cf;
+    }
+    body.dark .actions button,
+    body.dark .actions a {
+      background: #e3d8b0;
+      color: #2a2a2a;
+    }
+    body.dark .actions button:hover,
+    body.dark .actions a:hover {
+      background: #c3b37a;
+      color: #2a2a2a;
+      text-decoration: none;
+    }
+    body.dark .actions button.liked i {
+      fill: #6a4229;
+    }
+    body.dark .empty-state {
+      color: #a69e85;
+    }
+    body.dark .empty-state img {
+      filter: brightness(0.7) contrast(1.2);
+    }
+    body.dark #previewModal .preview-content {
+      background: #3a3a3a;
+      color: #cfc7b8;
+      box-shadow: 0 4px 25px rgba(255 255 255 / 0.1);
+    }
+    body.dark #previewModal h3 {
+      color: #e3d8b0;
+    }
+    body.dark #previewModal button {
+      background: #e3d8b0;
+      color: #2a2a2a;
+    }
+    body.dark #previewModal button:hover {
+      background: #c3b37a;
+    }
+    body.dark .modal-content {
+  background: #3a3a3a;
+  color: #cfc7b8;
+  box-shadow: 0 4px 25px rgba(255, 255, 255, 0.1);
+}
+
+body.dark .modal-content input,
+body.dark .modal-content textarea,
+body.dark .modal-content select {
+ 
+  background: #2a2a2a !important;
+  color: #cfc7b8 !important;
+  border: 1px solid #6f6f6f !important;
+}
+body.dark .modal-content .choices__inner {
+  background: #1e1e1e !important;
+  color: #cfc7b8 !important;
+  border: 1px solid #6f6f6f !important;
+}
+body.dark .description {
+      
+      color: #e3d8b0;
+      
+    }
+
+body.dark .modal-content label {
+  color: #e3d8b0;
+}
+
+body.dark .modal-content .upload-btn {
+  background: #e3d8b0;
+  color: #2a2a2a;
+}
+
+body.dark .modal-content .upload-btn:hover {
+  background: #c3b37a;
+}
+
+body.dark .modal-content .close-btn {
+  color: #e3d8b0;
+}
+
+body.dark .profile a.user-link {
+  color: #cfc7b8;
+}
+
+body.dark .profile a.user-link:hover {
+  color: #e3d8b0;
+}
+    /* Dark mode toggle button */
+    .dark-toggle {
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 20px;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+    .dark-toggle:hover {
+      background: rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <nav>
+      <a href="search.html"><i data-lucide="search"></i> Search</a>
+      <a href="uploads.html"><i data-lucide="upload-cloud"></i> Uploads</a>
+      <a href="favorites.html"><i data-lucide="heart"></i> Favorites</a>
+      <button class="dark-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <i data-lucide="moon"></i>
+    </nav>
+    
+    <div class="profile">
+      <a href="profile.html" class="user-link">
+        <img src="https://i.pravatar.cc/36" alt="User avatar"/>
+        <span>User</span>
+      </a>
+    </div>
+    
+  </aside>
+
+  <main class="main">
+    <header>
+      <h1 class="page-title">Uploads</h1>
+      <button class="upload-btn" onclick="showModal()">+ Upload Note</button>
+    </header>
+
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <img src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" alt="Empty State"/>
+      <p>No notes uploaded yet. Click “Upload Note” to get started!</p>
+    </div>
+
+    <div id="recentUploads" class="notes-grid"></div>
+  </main>
+
+  <!-- Upload Modal -->
+  <div id="uploadModal" class="modal" onclick="if(event.target===this)hideModal()">
+    <form class="modal-content" onsubmit="handleUpload(event)">
+      <button type="button" class="close-btn" onclick="hideModal()" aria-label="Close">&times;</button>
+      <h2>Upload Note</h2>
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text" placeholder="Note title" required minlength="2" maxlength="40" />
+      
+      <label for="category">Category</label>
+      <select id="category" name="category" required>
+        <option value="" disabled selected>Select category</option>
+        <option>Math</option>
+        <option>Physics</option>
+        <option>Computer Science</option>
+        <option>Biology</option>
+        <option>History</option>
+      </select>
+      
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="3" placeholder="Brief description" maxlength="180"></textarea>
+      
+      <label for="file">File (PDF or Image)</label>
+      <input id="file" name="file" type="file" accept=".pdf,image/*" required />
+      
+      <button type="submit" class="upload-btn">Upload</button>
+    </form>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="preview-modal" onclick="if(event.target===this)this.style.display='none'">
+    <div id="previewContent" class="preview-content"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script>
+    const uploads = [];
+
+    function showModal() {
+      document.getElementById("uploadModal").style.display = "flex";
+    }
+
+    function hideModal() {
+      document.getElementById("uploadModal").style.display = "none";
+      // Reset form to clear preview url objects for garbage collection
+      document.querySelector('#uploadModal form').reset();
+    }
+
+    function handleUpload(e) {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const category = document.getElementById("category").value;
+      const description = document.getElementById("description").value.trim();
+      const fileInput = document.getElementById("file");
+      const file = fileInput.files[0];
+
+      if (!file) return alert('Please select a file.');
+
+      const url = URL.createObjectURL(file);
+
+      uploads.unshift({ title, category, description, file, url, liked: false });
+
+      hideModal();
+      renderUploads();
+    }
+
+    function toggleLike(index) {
+      uploads[index].liked = !uploads[index].liked;
+      renderUploads();
+    }
+
+    function showPreview(index) {
+      const note = uploads[index];
+      const content = document.getElementById("previewContent");
+      const modal = document.getElementById("previewModal");
+
+      let preview = "";
+      if (note.file.type.includes("pdf")) {
+        preview = `<iframe src="${note.url}" width="600" height="400" frameborder="0"></iframe>`;
+      } else {
+        preview = `<img src="${note.url}" alt="${note.title}" />`;
+      }
+
+      content.innerHTML = `${preview}<p class="description">${note.description}</p>`;
+      modal.style.display = "flex";
+    }
+    
+
+    function renderUploads() {
+      const container = document.getElementById("recentUploads");
+      const emptyState = document.getElementById("emptyState");
+      container.innerHTML = "";
+
+      if (uploads.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+      emptyState.style.display = "none";
+
+      uploads.forEach((note, i) => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+        card.innerHTML = `
+          <div class="title">${note.title}</div>
+          <div class="tag">${note.category}</div>
+          <div class="actions">
+            
+            <a href="${note.url}" download="${note.title}" title="Download Note"><i data-lucide="download"></i></a>
+            <button onclick="showPreview(${i})" aria-label="Preview Note"><i data-lucide="eye"></i></button>
+            <button onclick="toggleLike(${i})" class="${note.liked ? 'liked' : ''}" aria-label="Toggle Favorite">
+              <i data-lucide="heart"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Dark mode toggle logic
+    const body = document.body;
+    const darkToggle = document.querySelector('.dark-toggle');
+
+    function setDarkMode(enabled) {
+      if (enabled) {
+        body.classList.add('dark');
+        darkToggle.innerHTML = '<i data-lucide="sun"></i>';
+      } else {
+        body.classList.remove('dark');
+        darkToggle.innerHTML = '<i data-lucide="moon"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    // Load saved mode from localStorage
+    const savedMode = localStorage.getItem('darkMode');
+    const darkModeEnabled = savedMode === 'true';
+    setDarkMode(darkModeEnabled);
+
+    darkToggle.addEventListener('click', () => {
+      const isDark = body.classList.toggle('dark');
+      setDarkMode(isDark);
+      localStorage.setItem('darkMode', isDark);
+    });
+
+    // Initialize Choices.js for category select
+    new Choices("#category", { searchEnabled: true, itemSelectText: '' });
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notika - Favorites</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Existing styles unchanged, plus: */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f5e1c8;
+      display: flex;
+      height: 100vh;
+      color: #4a2e1e;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    aside {
+      background: #e0cbb5;
+      width: 220px;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background 0.3s, color 0.3s;
+      color: #4a2e1e;
+    }
+
+    aside nav {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    aside nav a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color 0.3s;
+      font-weight: 500;
+    }
+
+    aside nav a:hover {
+      color: #8b5e3b;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .profile img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .welcome {
+      color: #8b5e3b;
+      font-size: 26px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .toggle-btn {
+      background: var(--btn-bg);
+      border: var(--btn-border);
+      color: var(--btn-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s, color 0.3s;
+      user-select: none;
+    }
+
+    .toggle-btn:hover {
+      background: var(--btn-hover-bg);
+      color: var(--btn-hover-color);
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .note {
+      background: var(--note-bg, #fff);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      height: 180px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .note span {
+      font-weight: 500;
+      color: inherit;
+      margin-bottom: 5px;
+      overflow-wrap: break-word;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #d9b98c;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      width: fit-content;
+      margin-bottom: 10px;
+      transition: background 0.3s;
+    }
+
+    .note-footer {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      background: #8b5e3b;
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .icon-btn:hover {
+      background: #6a4229;
+    }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    .profile a.user-link {
+  text-decoration: none;
+  color: #4a2e1e;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  padding: 8px 0;
+  transition: color 0.3s;
+}
+
+.profile a.user-link:hover {
+  color: #8b5e3b;
+}
+
+    /* Dark mode styles */
+    body.dark {
+      background: #1e1e1e;
+      color: #cfc7b8;
+    }
+
+    body.dark aside {
+      background: #2a2a2a;
+      color: #cfc7b8;
+      box-shadow: 2px 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark aside nav a {
+      color: #cfc7b8;
+    }
+
+    body.dark aside nav a:hover {
+      color: #e3d8b0;
+    }
+
+    body.dark .main {
+      background: #292929;
+      color: #cfc7b8;
+    }
+
+    body.dark .welcome {
+      color: #e3d8b0;
+    }
+
+    body.dark .note {
+      background: #3a3a3a;
+      box-shadow: 0 2px 15px rgba(255, 255, 255, 0.05);
+      color: #cfc7b8;
+    }
+
+    body.dark .tag {
+      background: #8b6c3b;
+      color: #f0e9cf;
+    }
+
+    body.dark .icon-btn {
+      background: #e3d8b0;
+      color: #2a2a2a;
+    }
+
+    body.dark .icon-btn:hover {
+      background: #c3b37a;
+    }
+
+    body.dark .icon-btn svg {
+      stroke: #2a2a2a;
+    }
+
+    .dark-toggle {
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 20px;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .dark-toggle:hover {
+      background: rgba(0,0,0,0.1);
+    }
+    body.dark .profile a.user-link {
+  color: #cfc7b8;
+}
+
+body.dark .profile a.user-link:hover {
+  color: #e3d8b0;
+}
+
+    /* Modal styles */
+    #previewModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    #previewContent {
+      background: white;
+      max-width: 80vw;
+      max-height: 80vh;
+      width: 600px;
+      border-radius: 12px;
+      padding: 20px;
+      overflow: auto;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      color: #4a2e1e;
+      font-family: monospace;
+    }
+
+    /* Dark mode for modal */
+    body.dark #previewContent {
+      background: #3a3a3a;
+      color: #cfc7b8;
+    }
+
+    #previewContent iframe.pdf-preview {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      border-radius: 8px;
+    }
+
+    #previewContent pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 70vh;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    #closePreview {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #8b5e3b;
+      border: none;
+      color: white;
+      font-size: 18px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #closePreview:hover {
+      background: #6a4229;
+    }
+
+    body.dark #closePreview {
+      background: #e3d8b0;
+      color: #2a2a2a;
+    }
+
+    body.dark #closePreview:hover {
+      background: #c3b37a;
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <nav>
+      <a href="search.html"><i data-lucide="search"></i> Search</a>
+      <a href="uploads.html"><i data-lucide="upload-cloud"></i> Uploads</a>
+      <a href="favorites.html"><i data-lucide="heart"></i> Favorites</a>
+    </nav>
+    <div style="margin-top: 20px;">
+      <button class="dark-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <i data-lucide="moon"></i>
+      </button>
+    </div>
+    <div class="profile">
+      <a href="profile.html" class="user-link">
+        <img src="https://i.pravatar.cc/36" alt="User avatar"/>
+        <span>User</span>
+      </a>
+    </div>
+    
+  </aside>
+
+  <div class="main">
+    <header>
+      <div class="welcome">Your Favorites</div>
+    </header>
+    <div class="notes-grid" id="favoritesGrid"></div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+    <div id="previewContent">
+      <button id="closePreview" aria-label="Close preview">&times;</button>
+      <!-- preview content will be injected here -->
+    </div>
+  </div>
+
+  <script>
+    const body = document.body;
+    const darkToggle = document.querySelector(".dark-toggle");
+    const previewModal = document.getElementById('previewModal');
+    const previewContent = document.getElementById('previewContent');
+    const closePreviewBtn = document.getElementById('closePreview');
+
+    // Sample favorites data — you can replace or sync from localStorage later
+    const favorites = [
+      { id: "algebra", name: "Algebra_Cheatsheet.pdf", tag: "Math", type: "pdf" },
+      { id: "ww2", name: "World_War_II_Summary.txt", tag: "History", type: "txt" },
+      { id: "notes", name: "SomeNote.xyz", tag: "Other", type: "unknown" }
+    ];
+
+    const likedNotes = JSON.parse(localStorage.getItem("likedNotes")) || {};
+    const grid = document.getElementById("favoritesGrid");
+
+    function renderFavorites() {
+      grid.innerHTML = "";
+
+      if (favorites.length === 0) {
+        grid.innerHTML = `<p style="font-weight: 500;">No favorites yet. Try liking notes from Uploads or Search!</p>`;
+        return;
+      }
+
+      favorites.forEach(note => {
+        const isLiked = likedNotes[note.id] === true;
+
+        const noteDiv = document.createElement("div");
+        noteDiv.className = "note";
+        noteDiv.innerHTML = `
+          <span>${note.name}</span>
+          <div class="tag">${note.tag}</div>
+          <div class="note-footer">
+            <button class="icon-btn download-btn" title="Download"><i data-lucide="download"></i></button>
+            <button class="icon-btn preview-btn" title="Preview" data-name="${note.name}" data-type="${note.type}"><i data-lucide="eye"></i></button>
+            <button class="icon-btn like-btn" title="Like" data-id="${note.id}">
+              <i data-lucide="heart" style="fill: ${isLiked ? '#e74c3c' : 'none'}; stroke: ${isLiked ? '#e74c3c' : 'currentColor'};"></i>
+            </button>
+          </div>
+        `;
+        grid.appendChild(noteDiv);
+      });
+
+      lucide.createIcons();
+
+      document.querySelectorAll(".like-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          likedNotes[id] = !likedNotes[id];
+          localStorage.setItem("likedNotes", JSON.stringify(likedNotes));
+          renderFavorites();
+        });
+      });
+
+      document.querySelectorAll(".preview-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const name = btn.getAttribute("data-name");
+          const type = btn.getAttribute("data-type");
+          previewNote(name, type);
+        });
+      });
+
+      document.querySelectorAll(".download-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          alert("Download functionality coming soon!");
+        });
+      });
+    }
+
+    // Fetch sample text asynchronously for txt preview (simulate fetching)
+    async function getSampleText(filePath) {
+      try {
+        // In real scenario you fetch file content, here simulate with a placeholder
+        // const response = await fetch(filePath);
+        // return await response.text();
+        return "Sample text content preview for " + filePath;
+      } catch {
+        return "Unable to load preview.";
+      }
+    }
+
+    async function previewNote(name, type) {
+      const filePath = `./path/to/notes/${name}`;
+
+      if (type === 'pdf') {
+        previewContent.innerHTML = `
+          <button id="closePreview" aria-label="Close preview">&times;</button>
+          <iframe class="pdf-preview" src="${filePath}" frameborder="0"></iframe>
+        `;
+        document.getElementById('closePreview').addEventListener('click', closePreview);
+      } else if (type === 'txt') {
+        const text = await getSampleText(filePath);
+        previewContent.innerHTML = `
+          <button id="closePreview" aria-label="Close preview">&times;</button>
+          <pre>${text}</pre>
+        `;
+        document.getElementById('closePreview').addEventListener('click', closePreview);
+      } else {
+        previewContent.innerHTML = `
+          <button id="closePreview" aria-label="Close preview">&times;</button>
+          <p>Preview not available for this file type.</p>
+        `;
+        document.getElementById('closePreview').addEventListener('click', closePreview);
+      }
+
+      previewModal.style.display = 'flex';
+    }
+
+    function closePreview() {
+      previewModal.style.display = 'none';
+      // Reset preview content
+      previewContent.innerHTML = '';
+    }
+
+    closePreviewBtn.addEventListener('click', closePreview);
+
+    // Close modal when clicking outside content
+    previewModal.addEventListener('click', e => {
+      if (e.target === previewModal) closePreview();
+    });
+
+    // Dark mode toggle
+    function setDarkMode(enabled) {
+      if (enabled) {
+        body.classList.add("dark");
+        darkToggle.innerHTML = '<i data-lucide="sun"></i>';
+      } else {
+        body.classList.remove("dark");
+        darkToggle.innerHTML = '<i data-lucide="moon"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    // Load saved mode from localStorage
+    const savedMode = localStorage.getItem("darkMode") === "true";
+    setDarkMode(savedMode);
+
+    darkToggle.addEventListener("click", () => {
+      const isDark = body.classList.contains("dark");
+      setDarkMode(!isDark);
+      localStorage.setItem("darkMode", !isDark);
+    });
+
+    renderFavorites();
+  </script>
+</body>
+</html>

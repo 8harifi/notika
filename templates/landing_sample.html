@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Notika</title>
+</head>
+<body>
+
+  <h1>Welcome to Notika</h1>
+
+  <!-- Search Bar -->
+  <input type="text" id="search" placeholder="Search for documents, courses, or tags">
+  <button onclick="search()">Search</button>
+
+  <br><br>
+
+  <!-- Login / Signup Buttons -->
+  <button onclick="location.href='/login'">Login</button>
+  <button onclick="location.href='/signup'">Sign Up</button>
+
+  <script>
+    function search() {
+      const query = document.getElementById('search').value.trim();
+      if (query) {
+        window.location.href = `/search-results?q=${encodeURIComponent(query)}`;
+      }
+    }
+  </script>
+
+</body>
+</html>
+
